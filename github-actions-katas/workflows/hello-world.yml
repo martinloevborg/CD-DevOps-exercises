@@ -1,0 +1,31 @@
+name: hello-world
+on: push
+jobs:
+  my-job:
+    runs-on: ubuntu-latest
+    container: gradle:6-jdk11 #02
+    steps:
+      - name: my-step
+        #run: echo "Hello World!" #01
+        uses: actions/checkout@v2 #02
+      - run: ci/build-app.sh #02
+      - name: Test #03
+        run: ci/unit-test-app.sh #03
+      - name: Upload Repo #04
+        uses: actions/upload-artifact@v2 #04
+        with: #04
+          name: code #04
+          path: . #04
+      - name: workflow
+        jobs:
+          my_first_job:
+            name: Clone-down
+            uses: actions/checkout@v2
+          my_second_job:
+            name: Test
+            run: ci/unit-test-app.sh
+            needs: my_first_job
+          my_third_job:
+            name: Build
+            run: ci/build-app.sh
+            needs: my_first_job
